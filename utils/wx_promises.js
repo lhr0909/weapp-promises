@@ -26,7 +26,7 @@ function generatePromise(method_name, post_processing, options) {
       wx[method_name](options);
     });
 
-    return typeof(post_processing) === 'function' ? p.then(post_processing.bind(null, resolve, reject)) : p;
+    return typeof(post_processing) === 'function' ? p.then(post_processing) : p;
   }
 
   // make it uncallable
@@ -38,18 +38,20 @@ module.exports = {
   getUserInfo: generatePromise.bind(null, 'getUserInfo', null),
   getStorage: generatePromise.bind(null, 'getStorage', null),
   checkSession: generatePromise.bind(null, 'checkSession', null, {}), // no need to put any params
-  request: generatePromise.bind(null, 'request', function(resolve, reject, res) {
+  request: generatePromise.bind(null, 'request', function(res) {
     if (res.errMsg !== "request:ok" && res.statusCode >= 400) {
-      return reject(res);
+      var error = new Error('request failed');
+      error.response = res;
+      return Promise.reject(error);
     }
 
-    resolve(res);
+    return Promise.resolve(res);
   }),
-  login: generatePromise.bind(null, 'login', function(resolve, reject, res) {
+  login: generatePromise.bind(null, 'login', function(res) {
     if (!res.code) {
       console.log("no code found in login response, error message - " + res.errMsg);
-      return reject(res);
+      return Promise.reject(res);
     }
-    resolve(res);
+    return Promise.resolve(res);
   }, {}) // no need to put any params
 };
