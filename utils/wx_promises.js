@@ -35,7 +35,7 @@ function generatePromise(method_name, post_processing, options) {
 
 module.exports = {
   requestPayment: generatePromise.bind(null, 'requestPayment', null),
-  getUserInfo: generatePromise.bind(null, 'getUserInfo', null),
+  getUserInfo: generatePromise.bind(null, 'getUserInfo', null, {}),
   getStorage: generatePromise.bind(null, 'getStorage', null),
   checkSession: generatePromise.bind(null, 'checkSession', null, {}), // no need to put any params
   request: generatePromise.bind(null, 'request', function(res) {
